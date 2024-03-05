@@ -1,4 +1,4 @@
-import { getLocalStorage } from "./utils.mjs";
+import { setLocalStorage, getLocalStorage } from "./utils.mjs";
 
 function renderCartContents() {
   const cartItems = getLocalStorage("so-cart");
@@ -8,6 +8,7 @@ function renderCartContents() {
 
 function cartItemTemplate(item) {
   const newItem = `<li class="cart-card divider">
+  <span class="remove-item" data-id="${item.Id}">X</span>
   <a href="#" class="cart-card__image">
     <img
       src="${item.Image}"
@@ -20,9 +21,27 @@ function cartItemTemplate(item) {
   <p class="cart-card__color">${item.Colors[0].ColorName}</p>
   <p class="cart-card__quantity">qty: 1</p>
   <p class="cart-card__price">$${item.FinalPrice}</p>
+
 </li>`;
 
   return newItem;
 }
 
 renderCartContents();
+
+// Add event listener to each X icon
+document.querySelectorAll('.remove-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const itemId = item.dataset.id;
+    let cartItems = getLocalStorage("so-cart");
+    
+    // Remove item from cartItems array based on itemId
+    cartItems = cartItems.filter(cartItem => cartItem.Id !== itemId);
+    
+    // Update localStorage with updated cartItems
+    setLocalStorage("so-cart", cartItems);
+    
+    // Re-render cart contents
+    renderCartContents();
+  });
+});
